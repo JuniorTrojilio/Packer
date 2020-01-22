@@ -1,0 +1,21 @@
+program Packer;
+
+uses
+  Vcl.Forms,
+  Packer.View in 'Views\Packer.View.pas' {Form1},
+  Packer.Controller.Factory.Interf in 'Controller\Factory\Packer.Controller.Factory.Interf.pas',
+  Packer.Controller.Factory in 'Controller\Factory\Packer.Controller.Factory.pas',
+  Packer.Controller.Method.Interf in 'Controller\Factory\Methods\Packer.Controller.Method.Interf.pas',
+  Packer.Controller.Method in 'Controller\Factory\Methods\Packer.Controller.Method.pas',
+  Packer.Controller.Method.Zip.Interf in 'Controller\Factory\Methods\ZIP\Packer.Controller.Method.Zip.Interf.pas',
+  Packer.Controller.Method.Zip in 'Controller\Factory\Methods\ZIP\Packer.Controller.Method.Zip.pas',
+  Packer.Controller.Method.UnZip.Interf in 'Controller\Factory\Methods\UNZIP\Packer.Controller.Method.UnZip.Interf.pas';
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TForm1, Form1);
+  Application.Run;
+end.

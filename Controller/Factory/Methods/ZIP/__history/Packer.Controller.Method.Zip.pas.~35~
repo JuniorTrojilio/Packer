@@ -1,0 +1,326 @@
+unit Packer.Controller.Method.Zip;
+
+interface
+
+uses
+  Winapi.Windows, System.SysUtils, System.Zip,
+  Packer.Controller.Method.Zip.Interf, System.Generics.Collections,
+  Vcl.StdCtrls, Vcl.ComCtrls;
+
+type
+  TZip = class(TInterfacedObject, iZip, iZipParams, iZipFilterExt,
+    iZipInternParams, iZipFiles)
+  private
+    { Private declarations }
+    FZipFile: TZipFile;
+    FFileSaveDirectory: String;
+    FFilesToCompress: TList<String>;
+    FExt: TList<String>;
+    FTempDir: String;
+    FLabel: TLabel;
+    FProgressBar: TProgressBar;
+    function GetTemporaryDir: String;
+    procedure CreateTemporaryDir(var pNameFile: String);
+    procedure DeleteTempDir(pPath: String);
+    procedure CopyToTempDir(pCurrentDir, pFutureDir: String);
+    procedure DeleteDir(pPathDir: String);
+    procedure ExtractFilesToTempDir;
+    procedure EventOnProgress(Sender: TObject; FileName: string;
+      Header: TZipHeader; Position: Int64);
+  public
+    { Public declarations }
+    procedure &Execute;
+    function TrackProgres(var pLabel: TLabel; var pProgressbar: TProgressBar)
+      : iZipParams;
+    function AddFilesToCompress(pPathFile: String): iZipFiles; overload;
+    function AddFilesToCompress(pPathFile: TList<String>): iZipFiles; overload;
+    function AddFilesToCompressWithOpenDialog: iZipFiles;
+    function AddXML: iZipFilterExt;
+    function AddTXT: iZipFilterExt;
+    function AddPDF: iZipFilterExt;
+    function AddFDB: iZipFilterExt;
+    function AddZip: iZipFilterExt;
+    function AddFilterExt: iZipFilterExt;
+    function &EndFilterExt: iZipParams;
+    function SaveAs(Value: String): iZipParams; overload;
+    function SaveAs: iZipParams; overload;
+    function Params: iZipParams;
+    function &EndParams: iZipFiles;
+    constructor Create;
+    destructor Destroy; override;
+    class function New: iZip;
+  end;
+
+implementation
+
+uses
+  Dialogs.Controllers.Factory, Vcl.Forms,
+  Vcl.Dialogs, System.Classes;
+
+{ TZip }
+
+procedure TZip.CopyToTempDir(pCurrentDir, pFutureDir: String);
+var
+  SearchRec: TSearchRec;
+Const
+  DefaultExt = '\*.*';
+begin
+  Try
+    if FindFirst(pCurrentDir + DefaultExt, faAnyFile, SearchRec) = 0 then
+    begin
+      repeat
+        if DirectoryExists(pCurrentDir + '\' + SearchRec.Name) and
+          ((SearchRec.Name <> '.') and (SearchRec.Name <> '..')) then
+        begin
+          CreateDir(pFutureDir + '\' + SearchRec.Name);
+          CopyToTempDir(pCurrentDir + '\' + SearchRec.Name,
+            pFutureDir + '\' + SearchRec.Name);
+        end
+        else if FileExists(pCurrentDir + '\' + SearchRec.Name) then
+        begin
+          if (FExt.ExtractItem(ExtractFileExt(pCurrentDir + '\' +
+            SearchRec.Name), TList.TDirection.FromBeginning) <> '') or
+            (FExt.Count = 0) then
+          begin
+            CopyFile(PChar(pCurrentDir + '\' + SearchRec.Name),
+              PChar(pFutureDir + '\' + SearchRec.Name), False);
+          end;
+        end;
+      until FindNext(SearchRec) <> 0;
+    end;
+  finally
+    FindClose(SearchRec);
+  end;
+end;
+
+constructor TZip.Create;
+begin
+  FZipFile := TZipFile.Create;
+  FZipFile.OnProgress := EventOnProgress;
+  FFilesToCompress := TList<String>.Create;
+  FExt := TList<String>.Create;
+end;
+
+procedure TZip.CreateTemporaryDir(var pNameFile: String);
+begin
+  CreateDir(GetTemporaryDir + 'BackupTemporaryDir');
+  pNameFile := GetTemporaryDir + 'BackupTemporaryDir';
+end;
+
+procedure TZip.DeleteDir(pPathDir: String);
+Var
+  SearchRec: TSearchRec;
+Const
+  DefaultExt = '\*.*';
+begin
+  Try
+    if FindFirst(pPathDir + DefaultExt, faAnyFile, SearchRec) = 0 then
+    begin
+      repeat
+        if DirectoryExists(pPathDir + '\' + SearchRec.Name) and
+          ((SearchRec.Name <> '.') and (SearchRec.Name <> '..')) then
+        begin
+          DeleteDir(pPathDir + '\' + SearchRec.Name);
+          RemoveDirectory(PChar(pPathDir + '\' + SearchRec.Name));
+        end
+        else if FileExists(pPathDir + '\' + SearchRec.Name) then
+        begin
+          DeleteFile(pPathDir + '\' + SearchRec.Name);
+        end;
+      until FindNext(SearchRec) <> 0;
+    end;
+    RemoveDir(pPathDir);
+  finally
+    FindClose(SearchRec);
+  end;
+end;
+
+procedure TZip.DeleteTempDir(pPath: String);
+begin
+  if DirectoryExists(pPath) then
+  begin
+    DeleteDir(pPath);
+  end;
+end;
+
+destructor TZip.Destroy;
+begin
+  FFilesToCompress.DisposeOf;
+  FZipFile.DisposeOf;
+  FExt.DisposeOf;
+  inherited;
+end;
+
+class function TZip.New: iZip;
+begin
+  Result := Self.Create;
+end;
+
+function TZip.AddFilesToCompress(pPathFile: String): iZipFiles;
+begin
+  Result := Self;
+  FFilesToCompress.Add(pPathFile);
+end;
+
+function TZip.AddFilesToCompress(pPathFile: TList<String>): iZipFiles;
+var
+  I: Integer;
+begin
+  Result := Self;
+  for I := 0 to Pred(pPathFile.Count) do
+  begin
+    FFilesToCompress.Add(pPathFile.Items[I]);
+  end;
+end;
+
+function TZip.AddFilesToCompressWithOpenDialog: iZipFiles;
+var
+  lFiles: TStrings;
+  I: Integer;
+begin
+  Result := Self;
+
+  TDialogFactory.New.OpenDialog.Params.Title
+    ('Selecione o(s) arquivo(s) para compactar')
+    .AddFilter.AddXML.AddPDF.AddTXT.AddAll.AddZip.EndFilter.FilterIndex(4)
+    .AddOption.ReadOnly.AllowMultiSelect.FileMustExist.EndOptions.EndParams.
+    Execute(lFiles);
+
+  for I := 0 to Pred(lFiles.Count) do
+  begin
+    FFilesToCompress.Add(lFiles.KeyNames[I])
+  end;
+end;
+
+function TZip.AddFilterExt: iZipFilterExt;
+begin
+  Result := Self;
+end;
+
+function TZip.AddFDB: iZipFilterExt;
+begin
+  Result := Self;
+  FExt.Add('.FDB');
+end;
+
+function TZip.AddPDF: iZipFilterExt;
+begin
+  Result := Self;
+  FExt.Add('.pdf');
+end;
+
+function TZip.AddTXT: iZipFilterExt;
+begin
+  Result := Self;
+  FExt.Add('.txt');
+end;
+
+function TZip.AddXML: iZipFilterExt;
+begin
+  Result := Self;
+  FExt.Add('.xml');
+end;
+
+function TZip.AddZip: iZipFilterExt;
+begin
+  Result := Self;
+  FExt.Add('.zip');
+end;
+
+function TZip.EndFilterExt: iZipParams;
+begin
+  Result := Self;
+end;
+
+function TZip.EndParams: iZipFiles;
+begin
+  Result := Self;
+end;
+
+procedure TZip.EventOnProgress(Sender: TObject; FileName: string;
+  Header: TZipHeader; Position: Int64);
+begin
+  FLabel.Caption := ExtractFileName(FileName);
+//  FProgressBar.Position := Trunc(Position / Header.UncompressedSize * 100);
+end;
+
+procedure TZip.Execute;
+begin
+  CreateTemporaryDir(FTempDir);
+  ExtractFilesToTempDir;
+  FZipFile.ZipDirectoryContents(FFileSaveDirectory, FTempDir, zcDeflate,
+    FZipFile.OnProgress);
+  DeleteTempDir(FTempDir);
+end;
+
+procedure TZip.ExtractFilesToTempDir;
+var
+  I: Integer;
+begin
+  for I := 0 to Pred(FFilesToCompress.Count) do
+  begin
+    if DirectoryExists(FFilesToCompress.Items[I]) then
+    begin
+      CopyToTempDir(FFilesToCompress.Items[I], FTempDir);
+    end
+    else if FileExists(FFilesToCompress.Items[I]) then
+    begin
+      CopyFile(PChar(FFilesToCompress.Items[I]),
+        PChar(FTempDir + '\' + ExtractFileName(FFilesToCompress.Items[I]
+        )), False);
+    end;
+  end;
+end;
+
+function TZip.GetTemporaryDir: String;
+var
+  pNetpath: ARRAY [0 .. MAX_path - 1] of Char;
+  nlength: Cardinal;
+begin
+  nlength := MAX_path;
+  FillChar(pNetpath, SizeOF(pNetpath), #0);
+  GetTemppath(nlength, pNetpath);
+  Result := StrPas(pNetpath);
+end;
+
+function TZip.Params: iZipParams;
+begin
+  Result := Self;
+end;
+
+function TZip.SaveAs: iZipParams;
+begin
+  Result := Self;
+  TDialogFactory.New.SaveDialog.Params.Title('Salvar arquivo')
+    .AddFilter.AddZip.EndFilter.FilterIndex(1).DefaultExt('.zip')
+    .AddOption.ReadOnly.FileMustExist.EndOptions.EndParams.Execute
+    (FFileSaveDirectory);
+
+  if DirectoryExists(ExtractFileDir(FFileSaveDirectory)) then
+  begin
+    FFileSaveDirectory := ChangeFileExt(FFileSaveDirectory, '.zip');
+  end
+  else
+    Abort;
+end;
+
+function TZip.TrackProgres(var pLabel: TLabel;
+  var pProgressbar: TProgressBar): iZipParams;
+begin
+  Result := Self;
+  FLabel := pLabel;
+  FProgressBar := pProgressbar;
+end;
+
+function TZip.SaveAs(Value: String): iZipParams;
+begin
+  Result := Self;
+  if DirectoryExists(ExtractFileDir(Value)) then
+  begin
+    FFileSaveDirectory := ChangeFileExt(Value, '.zip');
+  end
+  else
+    raise Exception.Create('O diretório informado não existe!');
+end;
+
+end.

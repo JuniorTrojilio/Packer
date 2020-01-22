@@ -1,0 +1,27 @@
+unit Packer.Controller.Method.Zip.Interf;
+
+interface
+
+type
+  iZip = interface;
+
+  iZipInternParams = interface
+    ['{DBAA30A6-D4C4-41D4-9363-FCE817EEB90B}']
+    function GetTemporaryDir: String;
+  end;
+
+  iZipParams = interface
+    ['{C2F98D83-808D-4EC0-A059-D276173016CA}']
+    function SaveAs(Value: String): iZipParams; overload;
+    function SaveAs: iZipParams; overload;
+    function &EndParams: iZip;
+  end;
+
+  iZip = interface
+    ['{0DC71676-9725-4A30-B61C-E14FDA201C9D}']
+    function Params: iZipParams;
+  end;
+
+implementation
+
+end.
