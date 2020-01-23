@@ -3,7 +3,7 @@ unit Packer.Controller.Factory;
 interface
 
 uses
-  Packer.Controller.Factory.Interf, Packer.Controller.Method.Interf;
+  Packer.Controller.Factory.Interfaces, Packer.Controller.Method.Interfaces;
 type
     TPackerFactory = class(TInterfacedObject, iPackerFactory)
     private

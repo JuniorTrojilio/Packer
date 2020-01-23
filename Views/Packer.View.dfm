@@ -38,19 +38,11 @@ object Form1: TForm1
   end
   object Button2: TButton
     Left = 40
-    Top = 22
-    Width = 75
+    Top = 64
+    Width = 153
     Height = 25
-    Caption = 'Button2'
+    Caption = 'UnPacker with patterns'
     TabOrder = 2
-  end
-  object Memo1: TMemo
-    Left = 224
-    Top = 24
-    Width = 276
-    Height = 113
-    Lines.Strings = (
-      'Memo1')
-    TabOrder = 3
+    OnClick = Button2Click
   end
 end

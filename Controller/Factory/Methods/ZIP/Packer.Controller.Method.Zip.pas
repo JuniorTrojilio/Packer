@@ -3,9 +3,13 @@ unit Packer.Controller.Method.Zip;
 interface
 
 uses
+{$IF FireMonkeyVersion}
+  FMX.StdCtrls,
+{$ELSE}
+  Vcl.StdCtrls, Vcl.ComCtrls,
+{$ENDIF}
   Winapi.Windows, System.SysUtils, System.Zip,
-  Packer.Controller.Method.Zip.Interf, System.Generics.Collections,
-  Vcl.StdCtrls, Vcl.ComCtrls;
+  Packer.Controller.Method.Zip.Interfaces, System.Generics.Collections;
 
 type
   TZip = class(TInterfacedObject, iZip, iZipParams, iZipFilterExt,
@@ -19,6 +23,7 @@ type
     FTempDir: String;
     FLabel: TLabel;
     FProgressBar: TProgressBar;
+    FFilesCount : Integer;
     function GetTemporaryDir: String;
     procedure CreateTemporaryDir(var pNameFile: String);
     procedure DeleteTempDir(pPath: String);
@@ -84,6 +89,7 @@ begin
           begin
             CopyFile(PChar(pCurrentDir + '\' + SearchRec.Name),
               PChar(pFutureDir + '\' + SearchRec.Name), False);
+            Inc(FFilesCount);
           end;
         end;
       until FindNext(SearchRec) <> 0;
@@ -96,9 +102,9 @@ end;
 constructor TZip.Create;
 begin
   FZipFile := TZipFile.Create;
-  FZipFile.OnProgress := EventOnProgress;
   FFilesToCompress := TList<String>.Create;
   FExt := TList<String>.Create;
+  FFilesCount := 0;
 end;
 
 procedure TZip.CreateTemporaryDir(var pNameFile: String);
@@ -164,7 +170,7 @@ end;
 
 function TZip.AddFilesToCompress(pPathFile: TList<String>): iZipFiles;
 var
-  I: Integer;
+  I: integer;
 begin
   Result := Self;
   for I := 0 to Pred(pPathFile.Count) do
@@ -176,7 +182,7 @@ end;
 function TZip.AddFilesToCompressWithOpenDialog: iZipFiles;
 var
   lFiles: TStrings;
-  I: Integer;
+  I: integer;
 begin
   Result := Self;
 
@@ -240,14 +246,23 @@ end;
 procedure TZip.EventOnProgress(Sender: TObject; FileName: string;
   Header: TZipHeader; Position: Int64);
 begin
+{$IF FireMonkeyVersion}
+  FLabel.Text := ExtractFileName(FileName);
+  FProgressBar.Max := Trunc(Position / Header.UncompressedSize * 100);
+{$ELSE}
   FLabel.Caption := ExtractFileName(FileName);
-//  FProgressBar.Position := Trunc(Position / Header.UncompressedSize * 100);
+  FProgressBar.Position := Trunc(Position / Header.UncompressedSize * 100);
+{$ENDIF}
 end;
 
 procedure TZip.Execute;
 begin
   CreateTemporaryDir(FTempDir);
   ExtractFilesToTempDir;
+  
+  if FFilesCount = 0 then
+  raise Exception.Create('Diretório vazio, não foi processado nenhum arquivo!');
+  
   FZipFile.ZipDirectoryContents(FFileSaveDirectory, FTempDir, zcDeflate,
     FZipFile.OnProgress);
   DeleteTempDir(FTempDir);
@@ -255,7 +270,7 @@ end;
 
 procedure TZip.ExtractFilesToTempDir;
 var
-  I: Integer;
+  I: integer;
 begin
   for I := 0 to Pred(FFilesToCompress.Count) do
   begin
@@ -265,9 +280,14 @@ begin
     end
     else if FileExists(FFilesToCompress.Items[I]) then
     begin
-      CopyFile(PChar(FFilesToCompress.Items[I]),
-        PChar(FTempDir + '\' + ExtractFileName(FFilesToCompress.Items[I]
-        )), False);
+      if (FExt.ExtractItem(ExtractFileExt(FFilesToCompress.Items[I]),
+        TList.TDirection.FromBeginning) <> '') or (FExt.Count = 0) then
+      begin
+        CopyFile(PChar(FFilesToCompress.Items[I]),
+          PChar(FTempDir + '\' + ExtractFileName(FFilesToCompress.Items[I]
+          )), False);
+        Inc(FFilesCount);
+      end;
     end;
   end;
 end;
@@ -275,7 +295,7 @@ end;
 function TZip.GetTemporaryDir: String;
 var
   pNetpath: ARRAY [0 .. MAX_path - 1] of Char;
-  nlength: Cardinal;
+  nlength: cardinal;
 begin
   nlength := MAX_path;
   FillChar(pNetpath, SizeOF(pNetpath), #0);
@@ -304,11 +324,12 @@ begin
     Abort;
 end;
 
-function TZip.TrackProgres(var pLabel: TLabel;
-  var pProgressbar: TProgressBar): iZipParams;
+function TZip.TrackProgres(var pLabel: TLabel; var pProgressbar: TProgressBar)
+  : iZipParams;
 begin
   Result := Self;
-  pLabel := FLabel;
+  FZipFile.OnProgress := EventOnProgress;
+  FLabel := pLabel;
   FProgressBar := pProgressbar;
 end;
 

@@ -3,8 +3,8 @@ unit Packer.Controller.Method;
 interface
 
 uses
-  Packer.Controller.Method.Interf, Packer.Controller.Method.Zip.Interf,
-  Packer.Controller.Method.UnZip.Interf;
+  Packer.Controller.Method.Interfaces, Packer.Controller.Method.Zip.Interfaces,
+  Packer.Controller.Method.UnZip.Interfaces;
 type
     TPackerMethods = class(TInterfacedObject, iPackerMethods)
     private
