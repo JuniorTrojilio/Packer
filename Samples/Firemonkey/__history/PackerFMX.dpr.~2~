@@ -1,0 +1,19 @@
+program PackerFMX;
+
+uses
+  System.StartUpCopy,
+  FMX.Forms,
+  PackerFMX.View in 'View\PackerFMX.View.pas' {Form1},
+  Dialogs.Controllers.Factory in 'Controller\Dependencies\Dialogs\Factory\Dialogs.Controllers.Factory.pas',
+  Dialogs.Controllers.Interfaces.Factory in 'Controller\Dependencies\Dialogs\Factory\Dialogs.Controllers.Interfaces.Factory.pas',
+  Dialogs.Controllers.Method.Interfaces in 'Controller\Dependencies\Dialogs\Factory\Methods\Dialogs.Controllers.Method.Interfaces.pas',
+  Dialogs.Controllers.Method.OpenDialogs in 'Controller\Dependencies\Dialogs\Factory\Methods\Dialogs.Controllers.Method.OpenDialogs.pas',
+  Dialogs.Controllers.Method.SaveDialogs in 'Controller\Dependencies\Dialogs\Factory\Methods\Dialogs.Controllers.Method.SaveDialogs.pas';
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.CreateForm(TForm1, Form1);
+  Application.Run;
+end.

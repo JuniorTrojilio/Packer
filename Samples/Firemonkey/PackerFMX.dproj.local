@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2019/12/04 18:04:36.000.202,=C:\Users\osmar\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2019/12/09 17:32:25.000.137,=C:\Users\osmar\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2019/12/09 17:47:46.000.030,=C:\Users\osmar\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2019/12/20 14:27:26.000.859,=C:\Users\osmar\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2019/12/20 17:37:48.000.314,=C:\Users\osmar\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2019/12/26 16:01:39.000.418,=C:\Users\osmar\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2019/12/26 16:17:25.000.608,=C:\Users\osmar\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2020/01/23 17:30:14.042,=C:\Users\osmar\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2020/01/23 17:35:37.852,C:\Users\osmar\Desktop\Packer\Samples\Firemonkey\View\PackerFMX.pas=C:\Users\osmar\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2020/01/23 17:35:37.852,C:\Users\osmar\Desktop\Packer\Samples\Firemonkey\View\PackerFMX.fmx=C:\Users\osmar\Documents\Embarcadero\Studio\Projects\Unit1.fmx</Transaction>
+    <Transaction>2020/01/23 17:36:20.011,C:\Users\osmar\Desktop\Packer\Samples\Firemonkey\View\PackerFMX.View.pas=C:\Users\osmar\Desktop\Packer\Samples\Firemonkey\View\PackerFMX.pas</Transaction>
+    <Transaction>2020/01/23 17:36:20.011,C:\Users\osmar\Desktop\Packer\Samples\Firemonkey\View\PackerFMX.View.fmx=C:\Users\osmar\Desktop\Packer\Samples\Firemonkey\View\PackerFMX.fmx</Transaction>
+    <Transaction>2020/01/23 17:36:34.975,C:\Users\osmar\Desktop\Packer\Samples\Firemonkey\PackerFMX.dproj=C:\Users\osmar\Documents\Embarcadero\Studio\Projects\Project1.dproj</Transaction>
+    <Transaction>2020/01/23 17:37:58.431,=C:\Users\osmar\Desktop\Packer\Samples\Firemonkey\Controller\Dependencies\Dialogs\Factory\Dialogs.Controllers.Factory.pas</Transaction>
+    <Transaction>2020/01/23 17:37:59.188,=C:\Users\osmar\Desktop\Packer\Samples\Firemonkey\Controller\Dependencies\Dialogs\Factory\Dialogs.Controllers.Interfaces.Factory.pas</Transaction>
+    <Transaction>2020/01/23 17:38:08.832,=C:\Users\osmar\Desktop\Packer\Samples\Firemonkey\Controller\Dependencies\Dialogs\Factory\Methods\Dialogs.Controllers.Method.Interfaces.pas</Transaction>
+    <Transaction>2020/01/23 17:38:10.074,=C:\Users\osmar\Desktop\Packer\Samples\Firemonkey\Controller\Dependencies\Dialogs\Factory\Methods\Dialogs.Controllers.Method.OpenDialogs.pas</Transaction>
+    <Transaction>2020/01/23 17:38:10.605,=C:\Users\osmar\Desktop\Packer\Samples\Firemonkey\Controller\Dependencies\Dialogs\Factory\Methods\Dialogs.Controllers.Method.SaveDialogs.pas</Transaction>
+    <Transaction>2020/01/23 17:38:44.023,=C:\Users\osmar\Desktop\Packer\Samples\Firemonkey\Controller\Factory\Packer.Controller.Factory.Interfaces.pas</Transaction>
+    <Transaction>2020/01/23 17:38:44.054,=C:\Users\osmar\Desktop\Packer\Samples\Firemonkey\Controller\Factory\Packer.Controller.Factory.pas</Transaction>
+    <Transaction>2020/01/23 17:38:53.761,=C:\Users\osmar\Desktop\Packer\Samples\Firemonkey\Controller\Factory\Methods\Packer.Controller.Method.Interfaces.pas</Transaction>
+    <Transaction>2020/01/23 17:38:53.784,=C:\Users\osmar\Desktop\Packer\Samples\Firemonkey\Controller\Factory\Methods\Packer.Controller.Method.pas</Transaction>
+    <Transaction>2020/01/23 17:39:17.034,=C:\Users\osmar\Desktop\Packer\Samples\Firemonkey\Controller\Factory\Methods\ZIP\Packer.Controller.Method.Zip.Interfaces.pas</Transaction>
+    <Transaction>2020/01/23 17:39:17.936,=C:\Users\osmar\Desktop\Packer\Samples\Firemonkey\Controller\Factory\Methods\ZIP\Packer.Controller.Method.Zip.pas</Transaction>
+    <Transaction>2020/01/23 17:39:31.423,=C:\Users\osmar\Desktop\Packer\Samples\Firemonkey\Controller\Factory\Methods\UNZIP\Packer.Controller.Method.UnZip.Interfaces.pas</Transaction>
+    <Transaction>2020/01/23 17:39:32.270,=C:\Users\osmar\Desktop\Packer\Samples\Firemonkey\Controller\Factory\Methods\UNZIP\Packer.Controller.Method.UnZip.pas</Transaction>
+  </Transactions>
+</BorlandProject>

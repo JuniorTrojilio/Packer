@@ -3,7 +3,8 @@ unit Packer.Controller.Method.Zip;
 interface
 
 uses
-{$IF FireMonkeyVersion}
+
+{$IFDEF FMX}
   FMX.StdCtrls,
 {$ELSE}
   Vcl.StdCtrls, Vcl.ComCtrls,
@@ -246,9 +247,9 @@ end;
 procedure TZip.EventOnProgress(Sender: TObject; FileName: string;
   Header: TZipHeader; Position: Int64);
 begin
-{$IF FireMonkeyVersion}
+{$IFDEF FMX}
   FLabel.Text := ExtractFileName(FileName);
-  FProgressBar.Max := Trunc(Position / Header.UncompressedSize * 100);
+  FProgressBar.Value := Trunc(Position / Header.UncompressedSize * 100);
 {$ELSE}
   FLabel.Caption := ExtractFileName(FileName);
   FProgressBar.Position := Trunc(Position / Header.UncompressedSize * 100);

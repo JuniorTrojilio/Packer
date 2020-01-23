@@ -1,0 +1,131 @@
+unit Packer.Controller.Method.UnZip;
+
+interface
+
+uses
+{$IFDEF FMX}
+  FMX.StdCtrls,
+{$ELSE}
+  Vcl.StdCtrls, Vcl.ComCtrls, Vcl.FileCtrl, Vcl.Dialogs,
+{$ENDIF}
+  Packer.Controller.Method.UnZip.Interfaces, System.Zip;
+
+type
+  TUnZip = class(TInterfacedObject, iUnZip, iUnzipMethod, iUnZipFile)
+  private
+    { Private declarations }
+    FUnzip: TZipFile;
+    FFileName: String;
+    FPathToSave: String;
+    FLabel: TLabel;
+    FProgressBar: TProgressBar;
+    procedure EventOnProgress(Sender: TObject; FileName: string;
+      Header: TZipHeader; Position: Int64);
+  public
+    { Public declarations }
+    procedure &Execute;
+    function TrackProgres(var pLabel: TLabel;
+      var pProgressbar: TProgressBar): iUnZip;
+    function ExtractFile(pPathToSave: String): iUnZipFile; overload;
+    function ExtractFile: iUnZipFile; overload;
+    function SetFileToDecompress(pPathFile: String): iUnzipMethod; overload;
+    function SetFileToDecompress: iUnzipMethod; overload;
+    constructor Create;
+    destructor Destroy; override;
+    class function New: iUnZip;
+  end;
+
+implementation
+
+uses
+  System.SysUtils, Dialogs.Controllers.Factory;
+
+{ TUnZip }
+
+constructor TUnZip.Create;
+begin
+  FUnzip := TZipFile.Create;
+end;
+
+destructor TUnZip.Destroy;
+begin
+  FUnzip.DisposeOf;
+  inherited;
+end;
+
+procedure TUnZip.EventOnProgress(Sender: TObject; FileName: string;
+  Header: TZipHeader; Position: Int64);
+begin
+{$IF FireMonkeyVersion}
+  FLabel.Text := ExtractFileName(FileName);
+  FProgressBar.Max := Trunc(Position / Header.UncompressedSize * 100);
+{$ELSE}
+  FLabel.Caption := ExtractFileName(FileName);
+  FProgressBar.Position := Trunc(Position / Header.UncompressedSize * 100);
+{$ENDIF}
+end;
+
+procedure TUnZip.Execute;
+begin
+  if FUnzip.IsValid(FFileName) then
+  begin
+    FUnzip.ExtractZipFile(FFileName, FPathToSave + '\' +
+      ChangeFileExt(ExtractFileName(FFileName), ''), FUnzip.OnProgress);
+  end;
+end;
+
+function TUnZip.ExtractFile: iUnZipFile;
+begin
+  Result := Self;
+  SelectDirectory('Selecione o Diretório', '', FPathToSave, []);
+  if FPathToSave.IsEmpty then
+    FPathToSave := ExtractFilePath(FFileName);
+end;
+
+function TUnZip.ExtractFile(pPathToSave: String): iUnZipFile;
+begin
+  Result := Self;
+  if DirectoryExists(pPathToSave) then
+    FPathToSave := pPathToSave
+  else
+    FPathToSave := ExtractFilePath(FFileName);
+end;
+
+class function TUnZip.New: iUnZip;
+begin
+  Result := Self.Create;
+end;
+
+function TUnZip.SetFileToDecompress: iUnzipMethod;
+begin
+  Result := Self;
+
+  TDialogFactory.New.OpenDialog.Params.Title
+    ('Selecionar arquivo para descompactar')
+    .AddFilter.AddZip.EndFilter.DefaultExt('.zip')
+    .AddOption.ReadOnly.FileMustExist.EndOptions.EndParams.Execute(FFileName);
+
+  if FFileName.IsEmpty then
+    Abort;
+end;
+
+function TUnZip.TrackProgres(var pLabel: TLabel;
+  var pProgressbar: TProgressBar): iUnZip;
+begin
+  Result := Self;
+  FUnzip.OnProgress := EventOnProgress;
+  FLabel := pLabel;
+  FProgressBar := pProgressbar;
+end;
+
+function TUnZip.SetFileToDecompress(pPathFile: String): iUnzipMethod;
+begin
+  Result := Self;
+  FFileName := pPathFile;
+
+  if not FileExists(FFileName) then
+    raise Exception.Create
+      ('Arquivo selecionado para descompactação não existe.');
+end;
+
+end.

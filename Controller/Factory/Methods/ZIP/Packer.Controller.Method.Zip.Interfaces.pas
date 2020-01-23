@@ -3,7 +3,7 @@ unit Packer.Controller.Method.Zip.Interfaces;
 interface
 
 uses
-{$IF FireMonkeyVersion}
+{$IFDEF FMX}
   FMX.StdCtrls,
 {$ELSE}
   Vcl.StdCtrls, Vcl.ComCtrls,

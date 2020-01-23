@@ -3,7 +3,7 @@ unit Dialogs.Controllers.Interfaces.Factory;
 interface
 
 uses
-{$IF FireMonkeyVersion}
+{$IFDEF FMX}
   FMX.Dialogs,
 {$ELSE}
   Vcl.Dialogs,

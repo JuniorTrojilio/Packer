@@ -3,8 +3,12 @@ unit Packer.Controller.Method.UnZip;
 interface
 
 uses
-  Packer.Controller.Method.UnZip.Interfaces, System.Zip, Vcl.Dialogs, FileCtrl,
-  Vcl.StdCtrls, Vcl.ComCtrls;
+{$IFDEF FMX}
+  FMX.StdCtrls, FMX.Dialogs,
+{$ELSE}
+  Vcl.StdCtrls, Vcl.ComCtrls, Vcl.FileCtrl, Vcl.Dialogs, FileCtrl,
+{$ENDIF}
+  Packer.Controller.Method.UnZip.Interfaces, System.Zip;
 
 type
   TUnZip = class(TInterfacedObject, iUnZip, iUnzipMethod, iUnZipFile)
@@ -52,9 +56,9 @@ end;
 procedure TUnZip.EventOnProgress(Sender: TObject; FileName: string;
   Header: TZipHeader; Position: Int64);
 begin
-{$IF FireMonkeyVersion}
+{$IFDEF FMX}
   FLabel.Text := ExtractFileName(FileName);
-  FProgressBar.Max := Trunc(Position / Header.UncompressedSize * 100);
+  FProgressBar.Value := Trunc(Position / Header.UncompressedSize * 100);
 {$ELSE}
   FLabel.Caption := ExtractFileName(FileName);
   FProgressBar.Position := Trunc(Position / Header.UncompressedSize * 100);
@@ -65,16 +69,20 @@ procedure TUnZip.Execute;
 begin
   if FUnzip.IsValid(FFileName) then
   begin
-    FUnzip.ExtractZipFile(FFileName,
-      FPathToSave +'\'+ ChangeFileExt(ExtractFileName(FFileName), ''),
-      FUnzip.OnProgress);
+    FUnzip.ExtractZipFile(FFileName, FPathToSave + '\' +
+      ChangeFileExt(ExtractFileName(FFileName), ''), FUnzip.OnProgress);
   end;
 end;
 
 function TUnZip.ExtractFile: iUnZipFile;
 begin
   Result := Self;
+
+{$IFDEF FMX}
+  SelectDirectory('Selecione o Diretório', '', FPathToSave);
+{$ELSE}
   SelectDirectory('Selecione o Diretório', '', FPathToSave, []);
+{$ENDIF}
   if FPathToSave.IsEmpty then
     FPathToSave := ExtractFilePath(FFileName);
 end;

@@ -3,7 +3,12 @@ unit Packer.Controller.Method.UnZip.Interfaces;
 interface
 
 uses
-  System.Zip, Vcl.StdCtrls, Vcl.ComCtrls;
+{$IFDEF FMX}
+  FMX.StdCtrls,
+{$ELSE}
+  Vcl.StdCtrls, Vcl.ComCtrls,
+{$ENDIF}
+  System.Zip;
 
 type
   iUnzipInternParams = interface
