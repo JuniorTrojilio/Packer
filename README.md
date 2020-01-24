@@ -18,7 +18,7 @@ Padrões utilizados:
 ***
 Necessária a declaração da Unit: *`Packer.Controller.Factory`*
 
-A chamada da classe é iniciada através do método stático : 
+A chamada da fábrica é iniciada através do método stático : 
 ```pascal
   TPackerFactory.New;
 ```
