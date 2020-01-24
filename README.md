@@ -1,7 +1,7 @@
 # Packer :green_book:
 
-![licence](https://img.shields.io/github/license/JuniorTrojilio/Packer?style=flat-square)
-![update](https://img.shields.io/github/last-commit/JuniorTrojilio/Packer?style=flat-square)
+[![licence](https://img.shields.io/github/license/JuniorTrojilio/Packer?style=flat-square)](https://github.com/JuniorTrojilio/Packer/blob/master/license)
+[![update](https://img.shields.io/github/last-commit/JuniorTrojilio/Packer?style=flat-square)](https://github.com/JuniorTrojilio/Packer/commits/master)
 ![size](https://img.shields.io/github/repo-size/JuniorTrojilio/Packer?style=flat-square)
 ***
 `Firemonkey` `Visual Component Library`
