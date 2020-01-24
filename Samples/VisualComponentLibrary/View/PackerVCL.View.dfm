@@ -1,0 +1,67 @@
+object Form1: TForm1
+  Left = 0
+  Top = 0
+  Caption = 'Form1'
+  ClientHeight = 127
+  ClientWidth = 447
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Label1: TLabel
+    AlignWithMargins = True
+    Left = 20
+    Top = 79
+    Width = 407
+    Height = 13
+    Margins.Left = 20
+    Margins.Right = 20
+    Align = alBottom
+    Caption = 'Label1'
+    ExplicitWidth = 31
+  end
+  object ProgressBar1: TProgressBar
+    AlignWithMargins = True
+    Left = 20
+    Top = 100
+    Width = 407
+    Height = 17
+    Margins.Left = 20
+    Margins.Top = 5
+    Margins.Right = 20
+    Margins.Bottom = 10
+    Align = alBottom
+    TabOrder = 0
+  end
+  object Button1: TButton
+    AlignWithMargins = True
+    Left = 20
+    Top = 48
+    Width = 97
+    Height = 25
+    Margins.Left = 20
+    Margins.Right = 330
+    Align = alBottom
+    Caption = 'Compress'
+    TabOrder = 1
+    OnClick = Button1Click
+  end
+  object Button2: TButton
+    AlignWithMargins = True
+    Left = 20
+    Top = 17
+    Width = 97
+    Height = 25
+    Margins.Left = 20
+    Margins.Right = 330
+    Align = alBottom
+    Caption = 'Decompress'
+    TabOrder = 2
+    OnClick = Button2Click
+  end
+end

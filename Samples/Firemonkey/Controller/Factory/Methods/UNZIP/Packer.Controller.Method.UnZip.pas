@@ -6,7 +6,7 @@ uses
 {$IFDEF FMX}
   FMX.StdCtrls, FMX.Dialogs,
 {$ELSE}
-  Vcl.StdCtrls, Vcl.ComCtrls, Vcl.FileCtrl, Vcl.Dialogs, FileCtrl,
+  Vcl.StdCtrls, Vcl.ComCtrls, Vcl.Dialogs, FileCtrl,
 {$ENDIF}
   Packer.Controller.Method.UnZip.Interfaces, System.Zip;
 
