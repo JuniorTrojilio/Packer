@@ -194,6 +194,7 @@ begin
     Execute(lFiles);
 {$IFDEF FMX}
   FLabel.Text := 'Preparando arquivos para compactação';
+  Application.ProcessMessages;
 {$ELSE}
   FLabel.Caption := 'Preparando arquivos para compactação...';
   Application.ProcessMessages;
@@ -253,6 +254,7 @@ procedure TZip.EventOnProgress(Sender: TObject; FileName: string;
   Header: TZipHeader; Position: Int64);
 begin
 {$IFDEF FMX}
+  Application.ProcessMessages;
   FLabel.Text := ExtractFileName(FileName);
   FProgressBar.Value := Trunc(Position / Header.UncompressedSize * 100);
 {$ELSE}
