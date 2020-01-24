@@ -24,7 +24,7 @@ type
     FTempDir: String;
     FLabel: TLabel;
     FProgressBar: TProgressBar;
-    FFilesCount : Integer;
+    FFilesCount: Integer;
     function GetTemporaryDir: String;
     procedure CreateTemporaryDir(var pNameFile: String);
     procedure DeleteTempDir(pPath: String);
@@ -171,7 +171,7 @@ end;
 
 function TZip.AddFilesToCompress(pPathFile: TList<String>): iZipFiles;
 var
-  I: integer;
+  I: Integer;
 begin
   Result := Self;
   for I := 0 to Pred(pPathFile.Count) do
@@ -183,7 +183,7 @@ end;
 function TZip.AddFilesToCompressWithOpenDialog: iZipFiles;
 var
   lFiles: TStrings;
-  I: integer;
+  I: Integer;
 begin
   Result := Self;
 
@@ -192,7 +192,12 @@ begin
     .AddFilter.AddXML.AddPDF.AddTXT.AddAll.AddZip.EndFilter.FilterIndex(4)
     .AddOption.ReadOnly.AllowMultiSelect.FileMustExist.EndOptions.EndParams.
     Execute(lFiles);
-
+{$IFDEF FMX}
+  FLabel.Text := 'Preparando arquivos para compactação';
+{$ELSE}
+  FLabel.Caption := 'Preparando arquivos para compactação...';
+  Application.ProcessMessages;
+{$ENDIF}
   for I := 0 to Pred(lFiles.Count) do
   begin
     FFilesToCompress.Add(lFiles.KeyNames[I])
@@ -251,6 +256,7 @@ begin
   FLabel.Text := ExtractFileName(FileName);
   FProgressBar.Value := Trunc(Position / Header.UncompressedSize * 100);
 {$ELSE}
+  Application.ProcessMessages;
   FLabel.Caption := ExtractFileName(FileName);
   FProgressBar.Position := Trunc(Position / Header.UncompressedSize * 100);
 {$ENDIF}
@@ -260,18 +266,23 @@ procedure TZip.Execute;
 begin
   CreateTemporaryDir(FTempDir);
   ExtractFilesToTempDir;
-  
+
   if FFilesCount = 0 then
-  raise Exception.Create('Diretório vazio, não foi processado nenhum arquivo!');
-  
+    raise Exception.Create
+      ('Diretório vazio, não foi processado nenhum arquivo!');
   FZipFile.ZipDirectoryContents(FFileSaveDirectory, FTempDir, zcDeflate,
     FZipFile.OnProgress);
+{$IFDEF FMX}
+  FLabel.Text := 'Compactação Concluída';
+{$ELSE}
+  FLabel.Caption := 'Compactação Concluída';
+{$ENDIF}
   DeleteTempDir(FTempDir);
 end;
 
 procedure TZip.ExtractFilesToTempDir;
 var
-  I: integer;
+  I: Integer;
 begin
   for I := 0 to Pred(FFilesToCompress.Count) do
   begin
